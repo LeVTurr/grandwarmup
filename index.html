@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GrandWarmUp - Простое управление жестами</title>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <div class="container">
+        <header> 
+            <h1><i class="fas fa-hand-sparkles"></i> GrandWarmUp</h1>
+            <p class="subtitle">Простое управление жестами - быстро и понятно</p>
+        </header>
+
+        <!-- БОКОВЫЕ ВКЛАДКИ НАВИГАЦИИ -->
+        <div class="sidebar-tabs">
+            <div class="tab" id="tab-main">
+                <div class="tab-icon">
+                    <i class="fas fa-home"></i>
+                </div>
+                <span class="tab-text">Главное меню</span>
+            </div>
+            
+            <div class="tab" id="tab-theme">
+                <div class="tab-icon">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <span class="tab-text">Оттенок сайта</span>
+            </div>
+            
+            <div class="tab" id="tab-leaderboard">
+                <div class="tab-icon">
+                    <i class="fas fa-trophy"></i>
+                </div>
+                <span class="tab-text">Таблица лидеров</span>
+            </div>
+        </div>
+
+        <!-- ПАНЕЛИ КОНТЕНТА ДЛЯ ВКЛАДОК -->
+        <div class="tab-content-container">
+            <!-- Панель Главное меню -->
+<div class="tab-panel" id="panel-main">
+    <div class="panel-header">
+        <h2><i class="fas fa-home"></i> Главное меню</h2>
+        <button class="close-panel"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="panel-body">
+        <div class="menu-items">
+            <div class="menu-item">
+                <i class="fas fa-gamepad"></i>
+                <span>Новая игра</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-user-edit"></i>
+                <span>Сменить имя</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-cog"></i>
+                <span>Настройки</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-question-circle"></i>
+                <span>Обучение</span>
+            </div>
+            <div class="menu-item">
+                <i class="fas fa-info-circle"></i>
+                <span>О программе</span>
+            </div>
+        </div>
+    </div>
+</div>
+            <!-- Панель Оттенок сайта -->
+            <div class="tab-panel" id="panel-theme">
+                <div class="panel-header">
+                    <h2><i class="fas fa-palette"></i> Оттенок сайта</h2>
+                    <button class="close-panel"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="panel-body">
+                    <div class="theme-options">
+                        <div class="theme-option" data-theme="default">
+                            <div class="theme-preview default-theme"></div>
+                            <span>Стандартный</span>
+                        </div>
+                        <div class="theme-option" data-theme="dark">
+                            <div class="theme-preview dark-theme"></div>
+                            <span>Тёмный</span>
+                        </div>
+                        <div class="theme-option" data-theme="light">
+                            <div class="theme-preview light-theme"></div>
+                            <span>Светлый</span>
+                        </div>
+                        <div class="theme-option" data-theme="neon">
+                            <div class="theme-preview neon-theme"></div>
+                            <span>Неоновый</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Панель Таблица лидеров -->
+            <div class="tab-panel" id="panel-leaderboard">
+                <div class="panel-header">
+                    <h2><i class="fas fa-trophy"></i> Таблица лидеров</h2>
+                    <button class="close-panel"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="panel-body">
+                    <div class="leaderboard-empty">
+                        <i class="fas fa-trophy fa-3x"></i>
+                        <p>Таблица лидеров пока пуста</p>
+                        <span>Сыграйте игру, чтобы появились результаты</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button class="btn btn-start" id="start-btn">
+                <i class="fas fa-play"></i> Начать игру
+            </button>
+            <button class="btn btn-reset" id="reset-btn">
+                <i class="fas fa-redo"></i> Сбросить
+            </button>
+        </div>
+
+        <div class="main-content">
+            <section class="game-section">
+                <h2 class="section-title"><i class="fas fa-gamepad"></i> Лабиринт</h2>
+                <div class="maze-container">
+                    <canvas id="maze-canvas"></canvas>
+                </div>
+            </section>
+            
+            <section class="camera-section">
+                <h2 class="section-title"><i class="fas fa-video"></i> Камера</h2>
+                <div class="camera-container">
+                    <video id="camera-feed" autoplay playsinline></video>
+                    <canvas id="hand-overlay" class="hand-overlay"></canvas>
+                </div>
+            </section>
+        </div>
+        
+        <div class="controls-panel">
+            <h2 class="section-title"><i class="fas fa-hand-rock"></i> Управление жестами</h2>
+            
+            <div class="gestures-info">
+                <div class="gesture-card" id="gesture-up">
+                    <div class="gesture-icon">
+                        <i class="fas fa-hand-paper"></i>
+                    </div>
+                    <div class="gesture-text">
+                        <h3>↑ ВВЕРХ</h3>
+                        <p>Поднятая рука (все пальцы вверх)</p>
+                    </div>
+                </div>
+                
+                <div class="gesture-card" id="gesture-down">
+                    <div class="gesture-icon">
+                        <i class="fas fa-hand-point-up"></i>
+                    </div>
+                    <div class="gesture-text">
+                        <h3>↓ ВНИЗ</h3>
+                        <p>Один палец вверх (указательный)</p>
+                    </div>
+                </div>
+                
+                <div class="gesture-card" id="gesture-left">
+                    <div class="gesture-icon">
+                        <i class="fas fa-hand-peace"></i>
+                    </div>
+                    <div class="gesture-text">
+                        <h3>← ВЛЕВО</h3>
+                        <p>Разомкнутая рука (ладонь открыта)</p>
+                    </div>
+                </div>
+                
+                <div class="gesture-card" id="gesture-right">
+                    <div class="gesture-icon">
+                        <i class="fas fa-hand-rock"></i>
+                    </div>
+                    <div class="gesture-text">
+                        <h3>→ ВПРАВО</h3>
+                        <p>Сжатая рука (кулак)</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stats-panel">
+                <div class="stat">
+                    <div class="stat-value" id="time">00:00</div>
+                    <div class="stat-label">Время</div>
+                </div>
+                
+                <div class="stat">
+                    <div class="stat-value" id="moves">0</div>
+                    <div class="stat-label">Ходы</div>
+                </div>
+                
+                <div class="stat">
+                    <div class="stat-value" id="level">1</div>
+                    <div class="stat-label">Уровень</div>
+                </div>
+            </div>
+
+            <div class="status status-inactive" id="status">
+                <i class="fas fa-exclamation-circle"></i> Камера не активна. Нажмите "Начать игру"
+            </div>
+        </div>
+        
+        <div class="keyboard-controls">
+            <h3><i class="fas fa-keyboard"></i> Или используйте стрелки</h3>
+            <p>Стрелки ↑↓←→ для движения, клавиши 1-4 для изменения чувствительности</p>
+        </div>
+        
+        <div class="tips">
+            <h3><i class="fas fa-lightbulb"></i> Советы</h3>
+            <ul>
+                <li>Держите руку на расстоянии 0.5-1 метра от камеры</li>
+                <li>Делайте жесты четко и держите 1-2 секунды</li>
+                <li>Если жесты не срабатывают - попробуйте изменить чувствительность (клавиши 1-4)</li>
+            </ul>
+        </div>
+        
+        <footer>
+            <p>GrandWarmUp &copy; 2025-2026 | Дистанционное управление курсором, жестами</p>
+            <p>-----------------------------------------------------------------------------</p>
+        </footer>
+        <script src="./index.js"></script>
+    </div>
+</body>
+</html>
