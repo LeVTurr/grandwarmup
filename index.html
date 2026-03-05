@@ -38,41 +38,46 @@
                 </div>
                 <span class="tab-text">Таблица лидеров</span>
             </div>
+
+            <!-- Новая вкладка "Настройки" -->
+            <div class="tab" id="tab-settings">
+                <div class="tab-icon">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <span class="tab-text">Настройки</span>
+            </div>
         </div>
 
         <!-- ПАНЕЛИ КОНТЕНТА ДЛЯ ВКЛАДОК -->
         <div class="tab-content-container">
             <!-- Панель Главное меню -->
-<div class="tab-panel" id="panel-main">
-    <div class="panel-header">
-        <h2><i class="fas fa-home"></i> Главное меню</h2>
-        <button class="close-panel"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="panel-body">
-        <div class="menu-items">
-            <div class="menu-item">
-                <i class="fas fa-gamepad"></i>
-                <span>Новая игра</span>
+            <div class="tab-panel" id="panel-main">
+                <div class="panel-header">
+                    <h2><i class="fas fa-home"></i> Главное меню</h2>
+                    <button class="close-panel"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="panel-body">
+                    <div class="menu-items">
+                        <div class="menu-item">
+                            <i class="fas fa-gamepad"></i>
+                            <span>Новая игра</span>
+                        </div>
+                        <div class="menu-item">
+                            <i class="fas fa-user-edit"></i>
+                            <span>Сменить имя</span>
+                        </div>
+                        <div class="menu-item">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Обучение</span>
+                        </div>
+                        <div class="menu-item">
+                            <i class="fas fa-info-circle"></i>
+                            <span>О программе</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="menu-item">
-                <i class="fas fa-user-edit"></i>
-                <span>Сменить имя</span>
-            </div>
-            <div class="menu-item">
-                <i class="fas fa-cog"></i>
-                <span>Настройки</span>
-            </div>
-            <div class="menu-item">
-                <i class="fas fa-question-circle"></i>
-                <span>Обучение</span>
-            </div>
-            <div class="menu-item">
-                <i class="fas fa-info-circle"></i>
-                <span>О программе</span>
-            </div>
-        </div>
-    </div>
-</div>
+
             <!-- Панель Оттенок сайта -->
             <div class="tab-panel" id="panel-theme">
                 <div class="panel-header">
@@ -91,7 +96,7 @@
                         </div>
                         <div class="theme-option" data-theme="light">
                             <div class="theme-preview light-theme"></div>
-                            <span>Светлый</span>
+                            <span>Светло-голубой</span>
                         </div>
                         <div class="theme-option" data-theme="neon">
                             <div class="theme-preview neon-theme"></div>
@@ -112,6 +117,59 @@
                         <i class="fas fa-trophy fa-3x"></i>
                         <p>Таблица лидеров пока пуста</p>
                         <span>Сыграйте игру, чтобы появились результаты</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- НОВАЯ ПАНЕЛЬ: Настройки -->
+            <div class="tab-panel" id="panel-settings">
+                <div class="panel-header">
+                    <h2><i class="fas fa-cog"></i> Настройки</h2>
+                    <button class="close-panel"><i class="fas fa-times"></i></button>
+                </div>
+                <div class="panel-body">
+                    <div class="settings-section">
+                        <h3><i class="fas fa-video"></i> Камера</h3>
+                        <div class="settings-item">
+                            <label class="switch">
+                                <input type="checkbox" id="camera-toggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span>Включить камеру</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3><i class="fas fa-hand-paper"></i> Чувствительность жестов</h3>
+                        <div class="settings-item">
+                            <label><input type="radio" name="sensitivity" value="low"> Низкая</label>
+                        </div>
+                        <div class="settings-item">
+                            <label><input type="radio" name="sensitivity" value="medium" checked> Средняя</label>
+                        </div>
+                        <div class="settings-item">
+                            <label><input type="radio" name="sensitivity" value="high"> Высокая</label>
+                        </div>
+                        <div class="settings-item">
+                            <label><input type="radio" name="sensitivity" value="very_high"> Очень высокая</label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3><i class="fas fa-volume-up"></i> Звук</h3>
+                        <div class="settings-item">
+                            <label class="switch">
+                                <input type="checkbox" id="sound-toggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                            <span>Звуковые эффекты</span>
+                        </div>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button class="btn btn-reset-settings" id="reset-settings">
+                            <i class="fas fa-undo-alt"></i> Сбросить настройки
+                        </button>
                     </div>
                 </div>
             </div>
