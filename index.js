@@ -203,14 +203,14 @@ const themes = {
         accent: '#03dac6'
     },
     light: {
-        primary: '#6200ee',
-        secondary: '#03dac6',
-        background: 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)',
+        primary: '#0693ff',
+        secondary: '#0091ff',
+        background: 'linear-gradient(135deg, #ffffff 0%, #ffffff 100%)',
         mazeBg: '#ffffff',
-        mazeWall: '#bdbdbd',
-        player: '#6200ee',
+        mazeWall: '#85a4bc',
+        player: '#0693ff',
         finish: '#b00020',
-        text: '#000000',
+        text: '#5159fc',
         accent: '#018786'
     },
     neon: {
@@ -517,26 +517,511 @@ function drawPlayerOnly() {
     mazeCtx.fill();
 }
 
+// ========== РАЗНООБРАЗНЫЕ ЭФФЕКТЫ ПРАЗДНОВАНИЯ С УВЕЛИЧЕННОЙ ДЛИТЕЛЬНОСТЬЮ ==========
+function celebrateWithEffects() {
+    // Случайно выбираем тип эффекта
+    const effectType = Math.floor(Math.random() * 4); // 0-3
+    
+    switch(effectType) {
+        case 0:
+            createConfettiEffect();
+            break;
+        case 1:
+            createFireworksEffect();
+            break;
+        case 2:
+            createGiftsEffect();
+            break;
+        case 3:
+            createHeartsEffect();
+            break;
+    }
+}
+
+// Эффект конфетти (увеличен с 6 до 15 секунд)
+function createConfettiEffect() {
+    let canvas = document.getElementById('celebration-canvas');
+    
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'celebration-canvas';
+        document.body.appendChild(canvas);
+    }
+    
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const particles = [];
+    const colors = [
+        '#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', 
+        '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', 
+        '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800', 
+        '#FF5722', '#795548', '#9E9E9E', '#607D8B', '#4cc9f0',
+        '#ffd700', '#ff6b6b', '#6bff6b', '#6b6bff', '#ff6bff'
+    ];
+    
+    const shapes = ['rect', 'circle', 'triangle', 'star'];
+    const particleCount = 300; // Увеличено количество частиц для более насыщенного эффекта
+    
+    for (let i = 0; i < particleCount; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            size: Math.random() * 15 + 5, // Увеличен размер
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speed: Math.random() * 6 + 3, // Немного медленнее для плавности
+            angle: Math.random() * Math.PI * 2,
+            rotation: Math.random() * 0.2 - 0.1,
+            wobble: Math.random() * 0.3 - 0.15,
+            opacity: Math.random() * 0.9 + 0.1,
+            shape: shapes[Math.floor(Math.random() * shapes.length)]
+        });
+    }
+    
+    animateEffect(canvas, ctx, particles, 15000); // Увеличено до 15 секунд
+}
+
+// Эффект салюта (фейерверк) - увеличен с ~4 секунд до 10 секунд
+function createFireworksEffect() {
+    let canvas = document.getElementById('celebration-canvas');
+    
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'celebration-canvas';
+        document.body.appendChild(canvas);
+    }
+    
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const particles = [];
+    const fireworkCount = 25; // Увеличено количество фейерверков
+    
+    for (let f = 0; f < fireworkCount; f++) {
+        // Разнесем фейерверки по времени
+        setTimeout(() => {
+            const centerX = Math.random() * canvas.width;
+            const centerY = Math.random() * canvas.height * 0.7;
+            const color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+            const particleCount = 50; // Увеличено количество частиц на фейерверк
+            
+            for (let i = 0; i < particleCount; i++) {
+                const angle = (i / particleCount) * Math.PI * 2;
+                const speed = Math.random() * 10 + 3;
+                
+                particles.push({
+                    x: centerX,
+                    y: centerY,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    size: Math.random() * 8 + 3,
+                    color: color,
+                    opacity: 1,
+                    life: 1,
+                    maxLife: Math.random() * 80 + 50 // Увеличена продолжительность жизни
+                });
+            }
+        }, f * 300); // Задержка между фейерверками 0.3 секунды
+    }
+    
+    let frame = 0;
+    const maxFrames = 300; // Увеличено с 120 до 300 кадров (примерно 10 секунд при 30fps)
+    
+    function animateFireworks() {
+        if (frame >= maxFrames) {
+            if (canvas && canvas.parentNode) {
+                canvas.remove();
+            }
+            return;
+        }
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Добавляем эффект звездного неба
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.05; // Меньше гравитация для более плавного падения
+            p.life -= 0.003; // Медленнее затухание
+            p.opacity = p.life;
+            
+            ctx.save();
+            ctx.globalAlpha = p.opacity;
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size * p.life, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        });
+        
+        frame++;
+        requestAnimationFrame(animateFireworks);
+    }
+    
+    animateFireworks();
+}
+
+// Эффект подарков - увеличен с 6 до 15 секунд
+function createGiftsEffect() {
+    let canvas = document.getElementById('celebration-canvas');
+    
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'celebration-canvas';
+        document.body.appendChild(canvas);
+    }
+    
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const gifts = [];
+    const giftCount = 60; // Увеличено количество подарков
+    const giftEmojis = ['🎁', '🎀', '🎄', '🎅', '🤶', '🦌', '⭐', '🌟', '✨', '🎊', '🎉', '🧸', '🍬', '🍭', '🧁', '🎈'];
+    
+    for (let i = 0; i < giftCount; i++) {
+        gifts.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            emoji: giftEmojis[Math.floor(Math.random() * giftEmojis.length)],
+            size: Math.random() * 50 + 30, // Увеличен размер
+            speed: Math.random() * 3 + 1, // Медленнее для плавности
+            rotation: 0,
+            rotationSpeed: (Math.random() - 0.5) * 0.01,
+            wobble: Math.random() * 2
+        });
+    }
+    
+    let frame = 0;
+    const maxFrames = 450; // Увеличено с 180 до 450 кадров (15 секунд при 30fps)
+    
+    function animateGifts() {
+        if (frame >= maxFrames) {
+            if (canvas && canvas.parentNode) {
+                canvas.remove();
+            }
+            return;
+        }
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        gifts.forEach(g => {
+            g.y += g.speed;
+            g.x += Math.sin(g.y * 0.02 + frame * 0.01) * g.wobble;
+            g.rotation += g.rotationSpeed;
+            
+            if (g.y > canvas.height + 100) {
+                g.y = -100;
+                g.x = Math.random() * canvas.width;
+            }
+            
+            ctx.save();
+            ctx.translate(g.x, g.y);
+            ctx.rotate(g.rotation);
+            ctx.font = `${g.size}px "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
+            ctx.shadowBlur = 15;
+            ctx.fillText(g.emoji, 0, 0);
+            ctx.restore();
+        });
+        
+        frame++;
+        requestAnimationFrame(animateGifts);
+    }
+    
+    animateGifts();
+}
+
+// Эффект сердечек - увеличен с 5 до 12 секунд
+function createHeartsEffect() {
+    let canvas = document.getElementById('celebration-canvas');
+    
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'celebration-canvas';
+        document.body.appendChild(canvas);
+    }
+    
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    
+    const hearts = [];
+    const heartCount = 80; // Увеличено количество сердечек
+    const colors = ['#ff6b6b', '#ff4757', '#ff3838', '#ff5252', '#ff6b8b', '#ff8b8b', '#ff9b9b', '#ffabab'];
+    
+    function drawHeart(ctx, x, y, size, color) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(size / 20, size / 20);
+        ctx.fillStyle = color;
+        ctx.shadowColor = 'rgba(255, 100, 100, 0.5)';
+        ctx.shadowBlur = 15;
+        
+        ctx.beginPath();
+        ctx.moveTo(0, 5);
+        ctx.bezierCurveTo(-5, -5, -15, -5, -15, 5);
+        ctx.bezierCurveTo(-15, 15, 0, 25, 0, 25);
+        ctx.bezierCurveTo(0, 25, 15, 15, 15, 5);
+        ctx.bezierCurveTo(15, -5, 5, -5, 0, 5);
+        ctx.fill();
+        ctx.restore();
+    }
+    
+    for (let i = 0; i < heartCount; i++) {
+        hearts.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height - canvas.height,
+            size: Math.random() * 40 + 20, // Увеличен размер
+            color: colors[Math.floor(Math.random() * colors.length)],
+            speed: Math.random() * 3 + 1, // Медленнее
+            wobble: Math.random() * 0.8,
+            angle: Math.random() * Math.PI * 2,
+            opacity: Math.random() * 0.7 + 0.3
+        });
+    }
+    
+    let frame = 0;
+    const maxFrames = 360; // Увеличено с 150 до 360 кадров (12 секунд при 30fps)
+    
+    function animateHearts() {
+        if (frame >= maxFrames) {
+            if (canvas && canvas.parentNode) {
+                canvas.remove();
+            }
+            return;
+        }
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Добавляем легкую дымку
+        ctx.fillStyle = 'rgba(255, 200, 220, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        hearts.forEach(h => {
+            h.y += h.speed;
+            h.x += Math.sin(h.y * 0.02 + h.angle) * h.wobble;
+            
+            if (h.y > canvas.height + 100) {
+                h.y = -100;
+                h.x = Math.random() * canvas.width;
+            }
+            
+            ctx.globalAlpha = h.opacity * (1 - frame / maxFrames * 0.3); // Плавное затухание
+            drawHeart(ctx, h.x, h.y, h.size, h.color);
+        });
+        
+        frame++;
+        requestAnimationFrame(animateHearts);
+    }
+    
+    animateHearts();
+}
+
+// Общая функция анимации для простых эффектов - увеличена длительность
+function animateEffect(canvas, ctx, particles, duration) {
+    let startTime = Date.now();
+    
+    function animate() {
+        const currentTime = Date.now();
+        const elapsed = currentTime - startTime;
+        
+        if (elapsed > duration) {
+            if (canvas && canvas.parentNode) {
+                canvas.remove();
+            }
+            return;
+        }
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Плавное затухание в конце
+        const opacity = 1 - Math.max(0, (elapsed - duration * 0.7) / (duration * 0.3));
+        
+        particles.forEach(p => {
+            p.y += p.speed;
+            p.x += Math.sin(p.y * 0.01 + p.angle) * (p.wobble || 0.5);
+            p.rotation += p.wobble || 0;
+            
+            if (p.y > canvas.height + 50) {
+                p.y = -50;
+                p.x = Math.random() * canvas.width;
+            }
+            
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.rotation || 0);
+            ctx.globalAlpha = (p.opacity || 1) * opacity;
+            ctx.fillStyle = p.color;
+            
+            if (p.shape === 'circle') {
+                ctx.beginPath();
+                ctx.arc(0, 0, p.size/2, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (p.shape === 'triangle') {
+                ctx.beginPath();
+                ctx.moveTo(0, -p.size/2);
+                ctx.lineTo(p.size/2, p.size/2);
+                ctx.lineTo(-p.size/2, p.size/2);
+                ctx.closePath();
+                ctx.fill();
+            } else if (p.shape === 'star') {
+                drawStar(ctx, 0, 0, 5, p.size/2, p.size/4);
+            } else {
+                ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size);
+            }
+            
+            ctx.restore();
+        });
+        
+        requestAnimationFrame(animate);
+    }
+    
+    animate();
+}
+
+// Функция для рисования звезды
+function drawStar(ctx, cx, cy, spikes, outerR, innerR) {
+    let rot = Math.PI / 2 * 3;
+    let step = Math.PI / spikes;
+    
+    ctx.beginPath();
+    for (let i = 0; i < spikes; i++) {
+        let x = cx + Math.cos(rot) * outerR;
+        let y = cy + Math.sin(rot) * outerR;
+        ctx.lineTo(x, y);
+        rot += step;
+        
+        x = cx + Math.cos(rot) * innerR;
+        y = cy + Math.sin(rot) * innerR;
+        ctx.lineTo(x, y);
+        rot += step;
+    }
+    ctx.closePath();
+    ctx.fill();
+}
+
+// Функция для показа праздничного сообщения (увеличено до 5 секунд)
+function showCelebrationMessage() {
+    const message = document.createElement('div');
+    message.className = 'celebration-message';
+    
+    const messages = [
+        '🎉 УРОВЕНЬ {level} ПРОЙДЕН! 🎉',
+        '⭐ ПОБЕДА! УРОВЕНЬ {level} ⭐',
+        '🏆 ТЫ ПРОШЕЛ УРОВЕНЬ {level}! 🏆',
+        '✨ УРОВЕНЬ {level} ЗАВЕРШЕН! ✨',
+        '🎊 ОТЛИЧНО! УРОВЕНЬ {level} 🎊',
+        '💫 ПРОГРЕСС! УРОВЕНЬ {level} 💫'
+    ];
+    
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+    message.innerHTML = randomMessage.replace('{level}', currentLevel);
+    
+    document.body.appendChild(message);
+    
+    // Увеличено с 3 до 5 секунд
+    setTimeout(() => {
+        if (document.body.contains(message)) {
+            document.body.removeChild(message);
+        }
+    }, 5000); // 5 секунд
+}
+
+// Обновленная функция levelComplete
 function levelComplete() {
     gameActive = false;
     clearInterval(gameInterval);
     stopArrowMovement();
     
     elapsedTime += (Date.now() - startTime) / 1000;
-    
-    // Сохраняем результат с текущим именем игрока
     saveLeaderboardResult(currentLevel, moves, elapsedTime);
+    
+    const cameraContainer = document.querySelector('.camera-container');
+    const statsPanel = document.querySelector('.stats-panel');
+    
+    if (currentLevel % 3 === 0) {
+        celebrateWithEffects();
+        showCelebrationMessage();
+        
+        // Воспроизводим звук, если он включён
+        if (isSoundEnabled()) {
+            playVictorySound();
+        }
+        
+        if (cameraContainer) cameraContainer.classList.add('celebrate');
+        if (statsPanel) statsPanel.classList.add('celebrate');
+    }
     
     setTimeout(() => {
         showNotification(`Уровень ${currentLevel} пройден!`, themes[currentTheme].primary);
-        
         currentLevel++;
         levelDisplay.textContent = currentLevel;
-        
         initCanvasSizes();
         generateMaze();
         startGame();
+        
+        if (cameraContainer) cameraContainer.classList.remove('celebrate');
+        if (statsPanel) statsPanel.classList.remove('celebrate');
     }, 500);
+}
+function isSoundEnabled() {
+    const soundToggle = document.getElementById('sound-toggle');
+    return soundToggle ? soundToggle.checked : true; // по умолчанию включено
+}
+// Функция для воспроизведения звука победы
+function playVictorySound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Выбираем случайную мелодию
+        const melodyType = Math.floor(Math.random() * 3);
+        
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.type = 'sine';
+        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2); // Увеличено затухание
+        
+        if (melodyType === 0) {
+            // Веселая мелодия
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // До
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.15); // Ми
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.3); // Соль
+            oscillator.frequency.setValueAtTime(1046.50, audioContext.currentTime + 0.45); // До (высокая)
+            oscillator.frequency.setValueAtTime(1046.50, audioContext.currentTime + 0.8); // Повтор
+        } else if (melodyType === 1) {
+            // Победная
+            oscillator.frequency.setValueAtTime(587.33, audioContext.currentTime); // Ре
+            oscillator.frequency.setValueAtTime(698.46, audioContext.currentTime + 0.2); // Фа
+            oscillator.frequency.setValueAtTime(880.00, audioContext.currentTime + 0.4); // Ля
+            oscillator.frequency.setValueAtTime(1174.66, audioContext.currentTime + 0.6); // Ре (высокая)
+            oscillator.frequency.setValueAtTime(1174.66, audioContext.currentTime + 1.0); // Повтор
+        } else {
+            // Фанфара
+            oscillator.frequency.setValueAtTime(415.30, audioContext.currentTime); // Соль-диез
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.15); // До
+            oscillator.frequency.setValueAtTime(622.25, audioContext.currentTime + 0.3); // Ре-диез
+            oscillator.frequency.setValueAtTime(830.61, audioContext.currentTime + 0.45); // Соль-диез (высокий)
+            oscillator.frequency.setValueAtTime(830.61, audioContext.currentTime + 0.9); // Повтор
+        }
+        
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 2); // Увеличено до 2 секунд
+    } catch (e) {
+        console.log('Аудио эффект не поддерживается');
+    }
 }
 
 // ========== ТАБЛИЦА ЛИДЕРОВ ==========
@@ -954,6 +1439,9 @@ async function initCamera() {
         
         statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Камера активна. Начните игру';
         statusDiv.className = 'status status-active';
+
+        // Синхронизируем чекбокс в настройках
+        syncCameraToggle();
         
         return true;
     } catch (err) {
@@ -962,6 +1450,30 @@ async function initCamera() {
         statusDiv.className = 'status status-inactive';
         return false;
     }
+}
+
+// Новая функция остановки камеры
+function stopCamera() {
+    if (cameraFeed.srcObject) {
+        const tracks = cameraFeed.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+        cameraFeed.srcObject = null;
+    }
+    gameStarted = false;
+    gameActive = false;
+    clearInterval(gameInterval);
+    stopArrowMovement();
+    statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Камера остановлена';
+    statusDiv.className = 'status status-inactive';
+    
+    // Обновить чекбокс в настройках
+    syncCameraToggle();
+}
+
+// Синхронизация чекбокса камеры
+function syncCameraToggle() {
+    const camToggle = document.getElementById('camera-toggle');
+    if (camToggle) camToggle.checked = gameStarted;
 }
 
 function setSensitivity(level) {
@@ -1080,6 +1592,9 @@ window.addEventListener('load', () => {
     if (savedTheme && themes[savedTheme]) {
         applyTheme(savedTheme);
     }
+
+    // Синхронизируем чекбокс камеры при загрузке
+    syncCameraToggle();
 });
 
 // ========== ПОЛНАЯ ЛОГИКА РАБОТЫ ВКЛАДОК ==========
@@ -1150,7 +1665,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
                     
                 case 'Настройки':
-                    showNotification('Настройки будут доступны в следующем обновлении', themes[currentTheme].primary);
+                    // Открыть панель настроек
+                    panels.forEach(p => p.classList.remove('active'));
+                    tabs.forEach(t => t.classList.remove('active'));
+                    document.getElementById('panel-settings').classList.add('active');
+                    document.getElementById('tab-settings').classList.add('active');
                     break;
                     
                 case 'Обучение':
@@ -1204,5 +1723,94 @@ document.addEventListener('DOMContentLoaded', function() {
             header.appendChild(refreshBtn);
         }
     }
-});
 
+    // ========== НАСТРОЙКИ ==========
+    const cameraToggle = document.getElementById('camera-toggle');
+    if (cameraToggle) {
+        cameraToggle.addEventListener('change', function(e) {
+            if (this.checked) {
+                if (!gameStarted) initCamera();
+            } else {
+                if (gameStarted) stopCamera();
+            }
+        });
+    }
+
+    // Чувствительность жестов
+    const sensitivityRadios = document.querySelectorAll('input[name="sensitivity"]');
+    sensitivityRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                const val = this.value;
+                let level;
+                switch(val) {
+                    case 'low': level = 1; break;
+                    case 'medium': level = 2; break;
+                    case 'high': level = 3; break;
+                    case 'very_high': level = 4; break;
+                    default: level = 2;
+                }
+                setSensitivity(level);
+                // Сохранить выбор в localStorage
+                localStorage.setItem('grandwarmup-sensitivity', val);
+            }
+        });
+    });
+
+    // Звук
+    const soundToggle = document.getElementById('sound-toggle');
+    if (soundToggle) {
+        soundToggle.addEventListener('change', function() {
+            localStorage.setItem('grandwarmup-sound', this.checked ? 'on' : 'off');
+            showNotification(this.checked ? 'Звук включён' : 'Звук выключен', themes[currentTheme].primary);
+        });
+    }
+
+    // Сброс настроек
+    const resetSettingsBtn = document.getElementById('reset-settings');
+    if (resetSettingsBtn) {
+        resetSettingsBtn.addEventListener('click', function() {
+            // Сброс камеры (включить)
+            if (!gameStarted) {
+                initCamera();
+            }
+            cameraToggle.checked = true;
+            
+            // Сброс чувствительности на среднюю
+            document.querySelector('input[name="sensitivity"][value="medium"]').checked = true;
+            setSensitivity(2);
+            localStorage.setItem('grandwarmup-sensitivity', 'medium');
+            
+            // Сброс звука (включить)
+            soundToggle.checked = true;
+            localStorage.setItem('grandwarmup-sound', 'on');
+            
+            showNotification('Настройки сброшены', themes[currentTheme].primary);
+        });
+    }
+
+    // Загрузка сохранённых настроек
+    const savedSensitivity = localStorage.getItem('grandwarmup-sensitivity');
+    if (savedSensitivity) {
+        const radio = document.querySelector(`input[name="sensitivity"][value="${savedSensitivity}"]`);
+        if (radio) {
+            radio.checked = true;
+            // Применить
+            let level;
+            switch(savedSensitivity) {
+                case 'low': level = 1; break;
+                case 'medium': level = 2; break;
+                case 'high': level = 3; break;
+                case 'very_high': level = 4; break;
+            }
+            setSensitivity(level);
+        }
+    }
+
+    const savedSound = localStorage.getItem('grandwarmup-sound');
+    if (savedSound === 'off') {
+        soundToggle.checked = false;
+    } else {
+        soundToggle.checked = true;
+    }
+});
