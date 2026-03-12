@@ -942,40 +942,47 @@ function levelComplete() {
     stopArrowMovement();
     
     elapsedTime += (Date.now() - startTime) / 1000;
+    
+    // Сохраняем результат с текущим именем игрока
     saveLeaderboardResult(currentLevel, moves, elapsedTime);
     
+    // Добавляем эффект свечения для камеры
     const cameraContainer = document.querySelector('.camera-container');
     const statsPanel = document.querySelector('.stats-panel');
     
+    // Проверяем, кратен ли пройденный уровень 3
     if (currentLevel % 3 === 0) {
         celebrateWithEffects();
         showCelebrationMessage();
         
-        // Воспроизводим звук, если он включён
-        if (isSoundEnabled()) {
-            playVictorySound();
+        if (cameraContainer) {
+            cameraContainer.classList.add('celebrate');
         }
-        
-        if (cameraContainer) cameraContainer.classList.add('celebrate');
-        if (statsPanel) statsPanel.classList.add('celebrate');
+        if (statsPanel) {
+            statsPanel.classList.add('celebrate');
+        }
     }
     
     setTimeout(() => {
         showNotification(`Уровень ${currentLevel} пройден!`, themes[currentTheme].primary);
+        
         currentLevel++;
         levelDisplay.textContent = currentLevel;
+        
         initCanvasSizes();
         generateMaze();
         startGame();
         
-        if (cameraContainer) cameraContainer.classList.remove('celebrate');
-        if (statsPanel) statsPanel.classList.remove('celebrate');
+        // Убираем эффекты после запуска нового уровня
+        if (cameraContainer) {
+            cameraContainer.classList.remove('celebrate');
+        }
+        if (statsPanel) {
+            statsPanel.classList.remove('celebrate');
+        }
     }, 500);
 }
-function isSoundEnabled() {
-    const soundToggle = document.getElementById('sound-toggle');
-    return soundToggle ? soundToggle.checked : true; // по умолчанию включено
-}
+
 // Функция для воспроизведения звука победы
 function playVictorySound() {
     try {
