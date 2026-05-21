@@ -75,7 +75,7 @@ h1 {
     margin-bottom: 30px;
 }
 
-.game-section, .camera-section {
+.game-section {
     flex: 2;
     min-width: 300px;
     background: rgba(255, 255, 255, 0.05);
