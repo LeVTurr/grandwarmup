@@ -311,14 +311,16 @@ function showNotification(message, color = '#4cc9f0') {
 }
 
 function initCanvasSizes() {
+    // Важно: берем реальное разрешение видео
+    const width = cameraFeed.videoWidth || 640;
+    const height = cameraFeed.videoHeight || 480;
+
+    handOverlay.width = width;
+    handOverlay.height = height;
+
     const mazeContainer = document.querySelector('.maze-container');
-    const cameraContainer = document.querySelector('.camera-container');
-    
     mazeCanvas.width = mazeContainer.clientWidth;
     mazeCanvas.height = mazeContainer.clientHeight;
-    
-    handOverlay.width = cameraContainer.clientWidth;
-    handOverlay.height = cameraContainer.clientHeight;
     
     cols = Math.floor(mazeCanvas.width / cellSize) - 2;
     rows = Math.floor(mazeCanvas.height / cellSize) - 2;
@@ -327,6 +329,10 @@ function initCanvasSizes() {
 }
 
 function generateMaze() {
+    // Автоматически делаем размеры нечетными, если переданы четные
+    if (cols % 2 === 0) cols--;
+    if (rows % 2 === 0) rows--;
+
     maze = [];
     for (let y = 0; y < rows; y++) {
         maze[y] = [];
@@ -334,28 +340,29 @@ function generateMaze() {
             maze[y][x] = 1;
         }
     }
-    
+
     let stack = [];
     let startX = 1;
     let startY = 1;
-    
+
     maze[startY][startX] = 0;
     stack.push([startX, startY]);
-    
+
     let maxIterations = Math.min(cols * rows, 500);
     let iterations = 0;
-    
+
     while (stack.length > 0 && iterations < maxIterations) {
         let [x, y] = stack[stack.length - 1];
         iterations++;
-        
+
         let neighbors = [];
-        
+
+        // Условия возвращены к стандартным, так как нечетный размер сам защищает края
         if (y > 1 && maze[y-2][x] === 1) neighbors.push([x, y-2, x, y-1]);
         if (y < rows-2 && maze[y+2][x] === 1) neighbors.push([x, y+2, x, y+1]);
         if (x > 1 && maze[y][x-2] === 1) neighbors.push([x-2, y, x-1, y]);
         if (x < cols-2 && maze[y][x+2] === 1) neighbors.push([x+2, y, x+1, y]);
-        
+
         if (neighbors.length > 0) {
             let [nx, ny, wx, wy] = neighbors[Math.floor(Math.random() * neighbors.length)];
             maze[ny][nx] = 0;
@@ -365,22 +372,82 @@ function generateMaze() {
             stack.pop();
         }
     }
-    
-    player.x = 1;
-    player.y = 1;
-    
-    finish.x = cols - 2;
-    finish.y = rows - 2;
+
+    // Устанавливаем стартовую точку
+    player.x = startX;
+    player.y = startY;
+
+    // Находим самую удалённую точку от старта с помощью BFS
+    const farthestPoint = findFarthestPoint(startX, startY);
+
+    // Устанавливаем финиш в найденной точке
+    finish.x = farthestPoint.x;
+    finish.y = farthestPoint.y;
     maze[finish.y][finish.x] = 0;
-    
+
+    // Создаем дополнительные проходы только во внутренних ячейках (от 1 до размера-2)
     for (let i = 0; i < Math.floor(cols * rows / 30); i++) {
         let x = Math.floor(Math.random() * (cols - 2)) + 1;
         let y = Math.floor(Math.random() * (rows - 2)) + 1;
+        
+        if ((x === player.x && y === player.y) || (x === finish.x && y === finish.y)) {
+            continue; 
+        }
         maze[y][x] = 0;
     }
-    
+
     drawMaze();
 }
+
+
+
+function findFarthestPoint(startX, startY) {
+    const visited = Array(rows).fill().map(() => Array(cols).fill(false));
+    const queue = [[startX, startY, 0]]; // [x, y, расстояние]
+    visited[startY][startX] = true;
+
+    let farthestX = startX;
+    let farthestY = startY;
+    let maxDistance = 0;
+
+    const directions = [
+        [0, -1], // вверх
+        [1, 0],  // вправо
+        [0, 1],  // вниз
+        [-1, 0]  // влево
+    ];
+
+    while (queue.length > 0) {
+        const [x, y, distance] = queue.shift();
+
+        // Обновляем самую удалённую точку
+        if (distance > maxDistance) {
+            maxDistance = distance;
+            farthestX = x;
+            farthestY = y;
+        }
+
+        // Проверяем все 4 направления
+        for (const [dx, dy] of directions) {
+            const newX = x + dx;
+            const newY = y + dy;
+
+            // Проверяем границы и проходимость
+            if (
+                newX >= 0 && newX < cols &&
+                newY >= 0 && newY < rows &&
+                !visited[newY][newX] &&
+                maze[newY][newX] === 0 // проход
+            ) {
+                visited[newY][newX] = true;
+                queue.push([newX, newY, distance + 1]);
+            }
+        }
+    }
+
+    return { x: farthestX, y: farthestY };
+}
+
 
 function drawMaze() {
     const theme = themes[currentTheme];
@@ -961,6 +1028,9 @@ function levelComplete() {
         if (statsPanel) {
             statsPanel.classList.add('celebrate');
         }
+        
+        // Воспроизводим звуковой эффект
+        playVictorySound();
     }
     
     setTimeout(() => {
@@ -984,11 +1054,14 @@ function levelComplete() {
 }
 
 // Функция для воспроизведения звука победы
+// Функция для воспроизведения звука победы (с проверкой настройки звука)
 function playVictorySound() {
+    // Проверяем, включён ли звук в настройках
+    if (window.soundEnabled === false) return;
+    
     try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         
-        // Выбираем случайную мелодию
         const melodyType = Math.floor(Math.random() * 3);
         
         const oscillator = audioContext.createOscillator();
@@ -999,33 +1072,30 @@ function playVictorySound() {
         
         oscillator.type = 'sine';
         gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2); // Увеличено затухание
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 2);
         
         if (melodyType === 0) {
-            // Веселая мелодия
-            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // До
-            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.15); // Ми
-            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.3); // Соль
-            oscillator.frequency.setValueAtTime(1046.50, audioContext.currentTime + 0.45); // До (высокая)
-            oscillator.frequency.setValueAtTime(1046.50, audioContext.currentTime + 0.8); // Повтор
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.15);
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.3);
+            oscillator.frequency.setValueAtTime(1046.50, audioContext.currentTime + 0.45);
+            oscillator.frequency.setValueAtTime(1046.50, audioContext.currentTime + 0.8);
         } else if (melodyType === 1) {
-            // Победная
-            oscillator.frequency.setValueAtTime(587.33, audioContext.currentTime); // Ре
-            oscillator.frequency.setValueAtTime(698.46, audioContext.currentTime + 0.2); // Фа
-            oscillator.frequency.setValueAtTime(880.00, audioContext.currentTime + 0.4); // Ля
-            oscillator.frequency.setValueAtTime(1174.66, audioContext.currentTime + 0.6); // Ре (высокая)
-            oscillator.frequency.setValueAtTime(1174.66, audioContext.currentTime + 1.0); // Повтор
+            oscillator.frequency.setValueAtTime(587.33, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(698.46, audioContext.currentTime + 0.2);
+            oscillator.frequency.setValueAtTime(880.00, audioContext.currentTime + 0.4);
+            oscillator.frequency.setValueAtTime(1174.66, audioContext.currentTime + 0.6);
+            oscillator.frequency.setValueAtTime(1174.66, audioContext.currentTime + 1.0);
         } else {
-            // Фанфара
-            oscillator.frequency.setValueAtTime(415.30, audioContext.currentTime); // Соль-диез
-            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.15); // До
-            oscillator.frequency.setValueAtTime(622.25, audioContext.currentTime + 0.3); // Ре-диез
-            oscillator.frequency.setValueAtTime(830.61, audioContext.currentTime + 0.45); // Соль-диез (высокий)
-            oscillator.frequency.setValueAtTime(830.61, audioContext.currentTime + 0.9); // Повтор
+            oscillator.frequency.setValueAtTime(415.30, audioContext.currentTime);
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime + 0.15);
+            oscillator.frequency.setValueAtTime(622.25, audioContext.currentTime + 0.3);
+            oscillator.frequency.setValueAtTime(830.61, audioContext.currentTime + 0.45);
+            oscillator.frequency.setValueAtTime(830.61, audioContext.currentTime + 0.9);
         }
         
         oscillator.start();
-        oscillator.stop(audioContext.currentTime + 2); // Увеличено до 2 секунд
+        oscillator.stop(audioContext.currentTime + 2);
     } catch (e) {
         console.log('Аудио эффект не поддерживается');
     }
@@ -1299,27 +1369,39 @@ function drawHandLandmarks(landmarks, gesture) {
 }
 
 function onResults(results) {
+    // Очищаем слой перед каждым кадром
+    handCtx.clearRect(0, 0, handOverlay.width, handOverlay.height);
+
     if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        // Берем первую найденную руку
         const landmarks = results.multiHandLandmarks[0];
-        const gesture = detectGesture(landmarks);
         
+        // 1. РИСУЕМ ТОЧКИ (приклеиваем к руке)
+        landmarks.forEach(point => {
+            // (1 - point.x) исправляет зеркальность
+            const x = (1 - point.x) * handOverlay.width;
+            const y = point.y * handOverlay.height;
+
+            handCtx.beginPath();
+            handCtx.arc(x, y, 4, 0, 2 * Math.PI);
+            handCtx.fillStyle = themes[currentTheme].primary;
+            handCtx.fill();
+        });
+
+        // 2. ОБРАБАТЫВАЕМ ГЕСТУРЫ
+        const gesture = detectGesture(landmarks);
         if (gameActive && gesture && !gestureCooldown) {
             processGesture(gesture);
         }
+
+        // 3. ОБНОВЛЯЕМ ПОЗИЦИЮ ДЛЯ СГЛАЖИВАНИЯ
+        const targetX = (1 - landmarks[0].x) * handOverlay.width;
+        const targetY = landmarks[0].y * handOverlay.height;
+        currentHandPosition = smoothPosition(targetX, targetY);
         
-        drawHandLandmarks(landmarks, gesture);
-        
-        if (landmarks[0]) {
-            currentHandPosition = {
-                x: landmarks[0].x * handOverlay.width,
-                y: landmarks[0].y * handOverlay.height
-            };
-            currentHandPosition = smoothPosition(currentHandPosition.x, currentHandPosition.y);
-        }
-    } else {
-        handCtx.clearRect(0, 0, handOverlay.width, handOverlay.height);
     }
 }
+
 
 function processGesture(gesture) {
     if (!gesture || gestureCooldown) return;
@@ -1444,11 +1526,11 @@ async function initCamera() {
         
         camera.start();
         
+        // СОХРАНЯЕМ ССЫЛКУ НА КАМЕРУ ДЛЯ ОСТАНОВКИ
+        window.cameraInstance = camera;
+        
         statusDiv.innerHTML = '<i class="fas fa-check-circle"></i> Камера активна. Начните игру';
         statusDiv.className = 'status status-active';
-
-        // Синхронизируем чекбокс в настройках
-        syncCameraToggle();
         
         return true;
     } catch (err) {
@@ -1457,30 +1539,6 @@ async function initCamera() {
         statusDiv.className = 'status status-inactive';
         return false;
     }
-}
-
-// Новая функция остановки камеры
-function stopCamera() {
-    if (cameraFeed.srcObject) {
-        const tracks = cameraFeed.srcObject.getTracks();
-        tracks.forEach(track => track.stop());
-        cameraFeed.srcObject = null;
-    }
-    gameStarted = false;
-    gameActive = false;
-    clearInterval(gameInterval);
-    stopArrowMovement();
-    statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Камера остановлена';
-    statusDiv.className = 'status status-inactive';
-    
-    // Обновить чекбокс в настройках
-    syncCameraToggle();
-}
-
-// Синхронизация чекбокса камеры
-function syncCameraToggle() {
-    const camToggle = document.getElementById('camera-toggle');
-    if (camToggle) camToggle.checked = gameStarted;
 }
 
 function setSensitivity(level) {
@@ -1599,9 +1657,6 @@ window.addEventListener('load', () => {
     if (savedTheme && themes[savedTheme]) {
         applyTheme(savedTheme);
     }
-
-    // Синхронизируем чекбокс камеры при загрузке
-    syncCameraToggle();
 });
 
 // ========== ПОЛНАЯ ЛОГИКА РАБОТЫ ВКЛАДОК ==========
@@ -1672,11 +1727,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
                     
                 case 'Настройки':
-                    // Открыть панель настроек
-                    panels.forEach(p => p.classList.remove('active'));
-                    tabs.forEach(t => t.classList.remove('active'));
-                    document.getElementById('panel-settings').classList.add('active');
-                    document.getElementById('tab-settings').classList.add('active');
+                    showNotification('Настройки будут доступны в следующем обновлении', themes[currentTheme].primary);
                     break;
                     
                 case 'Обучение':
@@ -1730,94 +1781,131 @@ document.addEventListener('DOMContentLoaded', function() {
             header.appendChild(refreshBtn);
         }
     }
-
-    // ========== НАСТРОЙКИ ==========
+});
+// ========== ЛОГИКА РАБОТЫ НАСТРОЕК (РАБОТАЮЩАЯ ВЕРСИЯ) ==========
+function initSettingsPanel() {
+    // Переключатель камеры — РЕАЛЬНОЕ ВКЛ/ВЫКЛ
     const cameraToggle = document.getElementById('camera-toggle');
+    let currentStream = null;
+    
     if (cameraToggle) {
-        cameraToggle.addEventListener('change', function(e) {
-            if (this.checked) {
-                if (!gameStarted) initCamera();
+        const savedCamera = localStorage.getItem('grandwarmup-camera-enabled');
+        if (savedCamera !== null) cameraToggle.checked = savedCamera === 'true';
+        
+        cameraToggle.addEventListener('change', async (e) => {
+            const isEnabled = e.target.checked;
+            localStorage.setItem('grandwarmup-camera-enabled', isEnabled);
+            
+            if (isEnabled) {
+                // Включаем камеру
+                await initCamera();
+                showNotification('📷 Камера включена', themes[currentTheme].primary);
             } else {
-                if (gameStarted) stopCamera();
+                // Выключаем камеру
+                if (window.cameraInstance && window.cameraInstance.stop) {
+                    window.cameraInstance.stop();
+                }
+                if (cameraFeed && cameraFeed.srcObject) {
+                    const tracks = cameraFeed.srcObject.getTracks();
+                    tracks.forEach(track => track.stop());
+                    cameraFeed.srcObject = null;
+                }
+                gameStarted = false;
+                gameActive = false;
+                statusDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Камера отключена в настройках';
+                statusDiv.className = 'status status-inactive';
+                showNotification('📷 Камера выключена', themes[currentTheme].primary);
             }
         });
     }
 
-    // Чувствительность жестов
+    // Чувствительность жестов — РАБОТАЕТ
     const sensitivityRadios = document.querySelectorAll('input[name="sensitivity"]');
+    const savedSens = localStorage.getItem('grandwarmup-sensitivity');
+    
+    // Маппинг значений
+    const sensMap = {
+        'low': SENSITIVITY.LOW,
+        'medium': SENSITIVITY.MEDIUM,
+        'high': SENSITIVITY.HIGH,
+        'very_high': SENSITIVITY.VERY_HIGH
+    };
+    
+    if (savedSens && sensMap[savedSens]) {
+        sensitivityRadios.forEach(radio => {
+            if (radio.value === savedSens) radio.checked = true;
+        });
+        sensitivity = sensMap[savedSens];
+    }
+    
     sensitivityRadios.forEach(radio => {
-        radio.addEventListener('change', function() {
-            if (this.checked) {
-                const val = this.value;
-                let level;
-                switch(val) {
-                    case 'low': level = 1; break;
-                    case 'medium': level = 2; break;
-                    case 'high': level = 3; break;
-                    case 'very_high': level = 4; break;
-                    default: level = 2;
-                }
-                setSensitivity(level);
-                // Сохранить выбор в localStorage
+        radio.addEventListener('change', (e) => {
+            if (e.target.checked) {
+                const val = e.target.value;
                 localStorage.setItem('grandwarmup-sensitivity', val);
+                sensitivity = sensMap[val];
+                
+                let text = '';
+                switch(val) {
+                    case 'low': text = 'НИЗКАЯ'; break;
+                    case 'medium': text = 'СРЕДНЯЯ'; break;
+                    case 'high': text = 'ВЫСОКАЯ'; break;
+                    case 'very_high': text = 'ОЧЕНЬ ВЫСОКАЯ'; break;
+                }
+                showNotification(`🎮 Чувствительность: ${text}`, themes[currentTheme].primary);
             }
         });
     });
 
-    // Звук
+    // Звук — ГЛОБАЛЬНЫЙ ФЛАГ
     const soundToggle = document.getElementById('sound-toggle');
+    window.soundEnabled = true;
+    
     if (soundToggle) {
-        soundToggle.addEventListener('change', function() {
-            localStorage.setItem('grandwarmup-sound', this.checked ? 'on' : 'off');
-            showNotification(this.checked ? 'Звук включён' : 'Звук выключен', themes[currentTheme].primary);
+        const savedSound = localStorage.getItem('grandwarmup-sound-enabled');
+        if (savedSound !== null) {
+            soundToggle.checked = savedSound === 'true';
+            window.soundEnabled = savedSound === 'true';
+        }
+        
+        soundToggle.addEventListener('change', (e) => {
+            const isEnabled = e.target.checked;
+            window.soundEnabled = isEnabled;
+            localStorage.setItem('grandwarmup-sound-enabled', isEnabled);
+            
+            if (isEnabled) {
+                showNotification('🔊 Звук включён', themes[currentTheme].primary);
+            } else {
+                showNotification('🔇 Звук выключен', themes[currentTheme].primary);
+            }
         });
     }
 
-    // Сброс настроек
+    // Кнопка сброса настроек
     const resetSettingsBtn = document.getElementById('reset-settings');
     if (resetSettingsBtn) {
-        resetSettingsBtn.addEventListener('click', function() {
-            // Сброс камеры (включить)
-            if (!gameStarted) {
-                initCamera();
+        resetSettingsBtn.addEventListener('click', () => {
+            // Сброс камеры
+            if (cameraToggle) {
+                cameraToggle.checked = true;
+                localStorage.setItem('grandwarmup-camera-enabled', 'true');
+                if (!gameStarted) initCamera();
             }
-            cameraToggle.checked = true;
             
-            // Сброс чувствительности на среднюю
-            document.querySelector('input[name="sensitivity"][value="medium"]').checked = true;
-            setSensitivity(2);
+            // Сброс чувствительности
+            const defaultRadio = document.querySelector('input[name="sensitivity"][value="medium"]');
+            if (defaultRadio) defaultRadio.checked = true;
+            sensitivity = SENSITIVITY.MEDIUM;
             localStorage.setItem('grandwarmup-sensitivity', 'medium');
             
-            // Сброс звука (включить)
-            soundToggle.checked = true;
-            localStorage.setItem('grandwarmup-sound', 'on');
+            // Сброс звука
+            if (soundToggle) {
+                soundToggle.checked = true;
+                window.soundEnabled = true;
+            }
+            localStorage.setItem('grandwarmup-sound-enabled', 'true');
             
-            showNotification('Настройки сброшены', themes[currentTheme].primary);
+            showNotification('🔄 Настройки сброшены до стандартных', themes[currentTheme].primary);
         });
     }
-
-    // Загрузка сохранённых настроек
-    const savedSensitivity = localStorage.getItem('grandwarmup-sensitivity');
-    if (savedSensitivity) {
-        const radio = document.querySelector(`input[name="sensitivity"][value="${savedSensitivity}"]`);
-        if (radio) {
-            radio.checked = true;
-            // Применить
-            let level;
-            switch(savedSensitivity) {
-                case 'low': level = 1; break;
-                case 'medium': level = 2; break;
-                case 'high': level = 3; break;
-                case 'very_high': level = 4; break;
-            }
-            setSensitivity(level);
-        }
-    }
-
-    const savedSound = localStorage.getItem('grandwarmup-sound');
-    if (savedSound === 'off') {
-        soundToggle.checked = false;
-    } else {
-        soundToggle.checked = true;
-    }
-});
+}
