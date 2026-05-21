@@ -75,7 +75,7 @@ h1 {
     margin-bottom: 30px;
 }
 
-.game-section {
+.game-section .camera-section {
     flex: 2;
     min-width: 300px;
     background: rgba(255, 255, 255, 0.05);
@@ -89,7 +89,7 @@ h1 {
 }
 
 .camera-section {
-    flex: 1     ;
+    flex: 1;
     min-width: 300px;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 15px;
