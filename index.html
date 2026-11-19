@@ -3,54 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GrandWarmUp - Простое управление жестами</title>
+    <title>GrandWarmUp</title>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <div class="wrapper">
-    <div class="container">
-        <header> 
-            <h1><i class="fas fa-hand-sparkles"></i> GrandWarmUp</h1>
-            <p class="subtitle">Простое управление жестами - быстро и понятно</p>
-        </header>
 
-                <!-- БОКОВЫЕ ВКЛАДКИ НАВИГАЦИИ -->
-    <div class="sidebar-tabs">
-        <div class="tab" id="tab-main">
-            <div class="tab-icon">
-                <i class="fas fa-home"></i>
-            </div>
-            <span class="tab-text">Главное меню</span>
-     </div>
-    
-        <div class="tab" id="tab-theme">
-            <div class="tab-icon">
-                <i class="fas fa-palette"></i>
-            </div>
-            <span class="tab-text">Оттенок сайта</span>
-        </div>
-    
-        <div class="tab" id="tab-leaderboard">
-            <div class="tab-icon">
-                <i class="fas fa-trophy"></i>
-            </div>
-            <span class="tab-text">Таблица лидеров</span>
-        </div>
-
-        <!--<div class="tab" id="tab-settings">
-            <div class="tab-icon">
-                <i class="fas fa-cog"></i>
-            </div>
-            <span class="tab-text">Настройки</span>
-        </div>-->
+    <div class="bg-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
     </div>
 
-        <!-- ПАНЕЛИ КОНТЕНТА ДЛЯ ВКЛАДОК -->
+    <div class="wrapper">
+    <div class="container">
+
+        <header class="app-header glass">
+            <div class="brand">
+                <div class="brand-logo"><i class="fas fa-hand-sparkles"></i></div>
+                <div class="brand-text">
+                    <h1>GrandWarmUp</h1>
+                    <p class="subtitle">Простое управление жестами — быстро и понятно</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="sidebar-tabs">
+            <div class="tab" id="tab-main">
+                <div class="tab-icon"><i class="fas fa-home"></i></div>
+                <span class="tab-text">Главное меню</span>
+            </div>
+            <div class="tab" id="tab-theme">
+                <div class="tab-icon"><i class="fas fa-palette"></i></div>
+                <span class="tab-text">Оттенок сайта</span>
+            </div>
+            <div class="tab" id="tab-leaderboard">
+                <div class="tab-icon"><i class="fas fa-trophy"></i></div>
+                <span class="tab-text">Личные достижения</span>
+            </div>
+            <div class="tab" id="tab-settings">
+                <div class="tab-icon"><i class="fas fa-cog"></i></div>
+                <span class="tab-text">Настройки</span>
+            </div>
+        </div>
+
         <div class="tab-content-container">
-            <!-- Панель Главное меню -->
             <div class="tab-panel" id="panel-main">
                 <div class="panel-header">
                     <h2><i class="fas fa-home"></i> Главное меню</h2>
@@ -58,27 +57,14 @@
                 </div>
                 <div class="panel-body">
                     <div class="menu-items">
-                        <div class="menu-item">
-                            <i class="fas fa-gamepad"></i>
-                            <span>Новая игра</span>
-                        </div>
-                        <div class="menu-item">
-                            <i class="fas fa-user-edit"></i>
-                            <span>Сменить имя</span>
-                        </div>
-                        <div class="menu-item">
-                            <i class="fas fa-question-circle"></i>
-                            <span>Обучение</span>
-                        </div>
-                        <div class="menu-item">
-                            <i class="fas fa-info-circle"></i>
-                            <span>О программе</span>
-                        </div>
+                        <div class="menu-item"><i class="fas fa-gamepad"></i><span>Новая игра</span></div>
+                        <div class="menu-item"><i class="fas fa-sign-out-alt"></i><span>Выйти из аккаунта</span></div>
+                        <div class="menu-item"><i class="fas fa-question-circle"></i><span>Обучение</span></div>
+                        <div class="menu-item"><i class="fas fa-info-circle"></i><span>О программе</span></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Панель Оттенок сайта -->
             <div class="tab-panel" id="panel-theme">
                 <div class="panel-header">
                     <h2><i class="fas fa-palette"></i> Оттенок сайта</h2>
@@ -86,42 +72,42 @@
                 </div>
                 <div class="panel-body">
                     <div class="theme-options">
-                        <div class="theme-option" data-theme="default">
-                            <div class="theme-preview default-theme"></div>
-                            <span>Стандартный</span>
+                        <div class="theme-option" data-theme="purple">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #a855f7, #d946ef);"></div>
+                            <span>Фиолетовый</span>
                         </div>
-                            <div class="theme-option" data-theme="dark">
-                            <div class="theme-preview dark-theme"></div>
-                            <span>Тёмный</span>
+                        <div class="theme-option" data-theme="blue">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #3b82f6, #06b6d4);"></div>
+                            <span>Синий</span>
                         </div>
-                        <div class="theme-option" data-theme="light">
-                            <div class="theme-preview light-theme"></div>
-                            <span>Светло-голубой</span>
+                        <div class="theme-option" data-theme="green">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #10b981, #14b8a6);"></div>
+                            <span>Зелёный</span>
                         </div>
-                        <div class="theme-option" data-theme="neon">
-                            <div class="theme-preview neon-theme"></div>
-                            <span>Неоновый</span>
+                        <div class="theme-option" data-theme="pink">
+                            <div class="theme-preview" style="background: linear-gradient(135deg, #ec4899, #f43f5e);"></div>
+                            <span>Розовый</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Панель Таблица лидеров -->
             <div class="tab-panel" id="panel-leaderboard">
                 <div class="panel-header">
-                    <h2><i class="fas fa-trophy"></i> Таблица лидеров</h2>
+                    <h2><i class="fas fa-trophy"></i> Личные достижения</h2>
                     <button class="close-panel"><i class="fas fa-times"></i></button>
                 </div>
-                <div class="panel-body">
-                    <div class="leaderboard-empty">
-                        <i class="fas fa-trophy fa-3x"></i>
-                        <p>Таблица лидеров пока пуста</p>
-                        <span>Сыграйте игру, чтобы появились результаты</span>
-                    </div>
+                <div class="ach-tabs">
+                    <button class="ach-tab active" data-mode="warmup">
+                        <i class="fas fa-spa"></i> Разминка
+                    </button>
+                    <button class="ach-tab" data-mode="competition">
+                        <i class="fas fa-trophy"></i> Соревнование
+                    </button>
                 </div>
+                <div class="panel-body"></div>
             </div>
 
-            <!-- НОВАЯ ПАНЕЛЬ: Настройки -->
             <div class="tab-panel" id="panel-settings">
                 <div class="panel-header">
                     <h2><i class="fas fa-cog"></i> Настройки</h2>
@@ -130,68 +116,134 @@
                 <div class="panel-body">
                     <div class="settings-section">
                         <h3><i class="fas fa-video"></i> Камера</h3>
-                        <div class="settings-item">
-                            <label class="switch">
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <span>Включить камеру</span>
+                                <small>Доступ к видеопотоку</small>
+                            </div>
+                            <label class="toggle">
                                 <input type="checkbox" id="camera-toggle" checked>
-                                <span class="slider"></span>
+                                <span class="toggle-track"><span class="toggle-thumb"></span></span>
                             </label>
-                            <span>Включить камеру</span>
+                        </div>
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <span>Скелет руки</span>
+                                <small>Показывать точки на камере</small>
+                            </div>
+                            <label class="toggle">
+                                <input type="checkbox" id="skeleton-toggle" checked>
+                                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                            </label>
                         </div>
                     </div>
-
                     <div class="settings-section">
-                        <h3><i class="fas fa-hand-paper"></i> Чувствительность жестов</h3>
-                        <div class="settings-item">
-                            <label><input type="radio" name="sensitivity" value="low"> Низкая</label>
-                        </div>
-                        <div class="settings-item">
-                            <label><input type="radio" name="sensitivity" value="medium" checked> Средняя</label>
-                        </div>
-                        <div class="settings-item">
-                            <label><input type="radio" name="sensitivity" value="high"> Высокая</label>
-                        </div>
-                        <div class="settings-item">
-                            <label><input type="radio" name="sensitivity" value="very_high"> Очень высокая</label>
+                        <h3><i class="fas fa-hand-paper"></i> Чувствительность</h3>
+                        <div class="segmented">
+                            <label class="segment"><input type="radio" name="sensitivity" value="low"><span>Низкая</span></label>
+                            <label class="segment"><input type="radio" name="sensitivity" value="medium" checked><span>Средняя</span></label>
+                            <label class="segment"><input type="radio" name="sensitivity" value="high"><span>Высокая</span></label>
+                            <label class="segment"><input type="radio" name="sensitivity" value="very_high"><span>Максимум</span></label>
                         </div>
                     </div>
-
+                    <div class="settings-section">
+                        <h3><i class="fas fa-th"></i> Размер лабиринта <span style="font-size:0.65rem;color:var(--text-faint);text-transform:none;letter-spacing:0;font-weight:400;">(разминка)</span></h3>
+                        <div class="segmented">
+                            <label class="segment"><input type="radio" name="cell-size" value="30"><span>Мелкий</span></label>
+                            <label class="segment"><input type="radio" name="cell-size" value="40" checked><span>Стандарт</span></label>
+                            <label class="segment"><input type="radio" name="cell-size" value="50"><span>Крупный</span></label>
+                        </div>
+                    </div>
                     <div class="settings-section">
                         <h3><i class="fas fa-volume-up"></i> Звук</h3>
-                        <div class="settings-item">
-                            <label class="switch">
+                        <div class="settings-row">
+                            <div class="settings-row-label">
+                                <span>Звуковые эффекты</span>
+                                <small>Победа, взрыв</small>
+                            </div>
+                            <label class="toggle">
                                 <input type="checkbox" id="sound-toggle" checked>
-                                <span class="slider"></span>
+                                <span class="toggle-track"><span class="toggle-thumb"></span></span>
                             </label>
-                            <span>Звуковые эффекты</span>
                         </div>
                     </div>
-
+                    <div class="settings-section">
+                        <h3><i class="fas fa-broom"></i> Данные</h3>
+                        <button class="settings-danger-btn" id="reset-progress">
+                            <i class="fas fa-trash"></i> Сбросить достижения
+                        </button>
+                    </div>
                     <div class="settings-actions">
-                        <button class="btn btn-reset-settings" id="reset-settings">
-                            <i class="fas fa-undo-alt"></i> Сбросить настройки</button>
+                        <button class="settings-primary-btn" id="reset-settings">
+                            <i class="fas fa-undo-alt"></i> Сбросить настройки
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <div class="buttons">
-            <button class="btn btn-start" id="start-btn">
-                <i class="fas fa-play"></i> Начать игру
+
+        <div class="action-bar">
+            <button class="action-btn action-btn-primary" id="start-btn">
+                <span class="action-icon"><i class="fas fa-play"></i></span>
+                <span class="action-text">
+                    <strong>Начать игру</strong>
+                    <small>Выбор режима</small>
+                </span>
             </button>
-            <button class="btn btn-reset" id="reset-btn">
-                <i class="fas fa-redo"></i> Сбросить
+            <button class="action-btn action-btn-secondary" id="reset-btn">
+                <span class="action-icon"><i class="fas fa-redo"></i></span>
+                <span class="action-text">
+                    <strong>Сбросить</strong>
+                    <small>Начать заново</small>
+                </span>
             </button>
         </div>
 
+        <div class="competition-panel glass" id="competition-info" style="display:none;">
+            <div class="comp-timer-card">
+                <div class="comp-timer-ring">
+                    <svg class="comp-timer-svg" viewBox="0 0 100 100">
+                        <circle class="ring-bg" cx="50" cy="50" r="44"/>
+                        <circle class="ring-fg" id="ring-fg" cx="50" cy="50" r="44"/>
+                    </svg>
+                    <div class="comp-timer-text">
+                        <div class="comp-timer-value" id="comp-timer">60</div>
+                        <div class="comp-timer-label">секунд</div>
+                    </div>
+                </div>
+            </div>
+            <div class="comp-stats-grid">
+                <div class="comp-stat-card">
+                    <div class="comp-stat-icon"><i class="fas fa-flag"></i></div>
+                    <div class="comp-stat-value" id="comp-round">1</div>
+                    <div class="comp-stat-label">Раунд</div>
+                </div>
+                <div class="comp-stat-card">
+                    <div class="comp-stat-icon"><i class="fas fa-signal"></i></div>
+                    <div class="comp-stat-value" id="comp-difficulty">Лёгкий</div>
+                    <div class="comp-stat-label">Сложность</div>
+                </div>
+                <div class="comp-stat-card">
+                    <div class="comp-stat-icon"><i class="fas fa-bomb"></i></div>
+                    <div class="comp-stat-value" id="comp-mines">0</div>
+                    <div class="comp-stat-label">Мин</div>
+                </div>
+                <div class="comp-stat-card comp-stat-defuse" id="comp-defuse-item" title="Нажми или покажи ✌ чтобы обезвредить">
+                    <div class="comp-stat-icon"><i class="fas fa-shield-alt"></i></div>
+                    <div class="comp-stat-value" id="comp-defuse">3</div>
+                    <div class="comp-stat-label">Обезвредить</div>
+                </div>
+            </div>
+        </div>
+
         <div class="main-content">
-            <section class="game-section">
+            <section class="game-section glass">
                 <h2 class="section-title"><i class="fas fa-gamepad"></i> Лабиринт</h2>
                 <div class="maze-container">
                     <canvas id="maze-canvas"></canvas>
                 </div>
             </section>
-            
-            <section class="camera-section">
+            <section class="camera-section glass">
                 <h2 class="section-title"><i class="fas fa-video"></i> Камера</h2>
                 <div class="camera-container">
                     <video id="camera-feed" autoplay playsinline></video>
@@ -199,94 +251,171 @@
                 </div>
             </section>
         </div>
-        
-        <div class="controls-panel">
+
+        <div class="controls-panel glass">
             <h2 class="section-title"><i class="fas fa-hand-rock"></i> Управление жестами</h2>
-            
             <div class="gestures-info">
                 <div class="gesture-card" id="gesture-up">
-                    <div class="gesture-icon">
-                        <i class="fas fa-hand-paper"></i>
-                    </div>
-                    <div class="gesture-text">
-                        <h3>↑ ВВЕРХ</h3>
-                        <p>Поднятая рука (все пальцы вверх)</p>
-                    </div>
+                    <div class="gesture-icon"><i class="fas fa-hand-paper"></i></div>
+                    <div class="gesture-text"><h3>↑ ВВЕРХ</h3><p>Поднятая рука (все пальцы вверх)</p></div>
                 </div>
-                
                 <div class="gesture-card" id="gesture-down">
-                    <div class="gesture-icon">
-                        <i class="fas fa-hand-point-up"></i>
-                    </div>
-                    <div class="gesture-text">
-                        <h3>↓ ВНИЗ</h3>
-                        <p>Один палец вверх (указательный)</p>
-                    </div>
+                    <div class="gesture-icon"><i class="fas fa-hand-point-up"></i></div>
+                    <div class="gesture-text"><h3>↓ ВНИЗ</h3><p>Один палец вверх (указательный)</p></div>
                 </div>
-                
                 <div class="gesture-card" id="gesture-left">
-                    <div class="gesture-icon">
-                        <i class="fas fa-hand-peace"></i>
-                    </div>
-                    <div class="gesture-text">  
-                        <h3>← ВЛЕВО</h3>
-                        <p>Разомкнутая рука (ладонь открыта)</p>
-                    </div>
+                    <div class="gesture-icon"><i class="fas fa-hand-peace"></i></div>
+                    <div class="gesture-text"><h3>← ВЛЕВО</h3><p>Разомкнутая рука (ладонь открыта)</p></div>
                 </div>
-                
                 <div class="gesture-card" id="gesture-right">
-                    <div class="gesture-icon">
-                        <i class="fas fa-hand-rock"></i>
-                    </div>
-                    <div class="gesture-text">
-                        <h3>→ ВПРАВО</h3>
-                        <p>Сжатая рука (кулак)</p>
-                    </div>
+                    <div class="gesture-icon"><i class="fas fa-hand-rock"></i></div>
+                    <div class="gesture-text"><h3>→ ВПРАВО</h3><p>Сжатая рука (кулак)</p></div>
+                </div>
+                <div class="gesture-card gesture-card-defuse" id="gesture-defuse" style="display:none;">
+                    <div class="gesture-icon"><i class="fas fa-hand-scissors"></i></div>
+                    <div class="gesture-text"><h3>✌ ОБЕЗВРЕДИТЬ</h3><p>Два пальца (V) — убрать ближайшую мину</p></div>
                 </div>
             </div>
-            
             <div class="stats-panel">
-                <div class="stat">
-                    <div class="stat-value" id="time">00:00</div>
-                    <div class="stat-label">Время</div>
-                </div>
-                
-                <div class="stat">
-                    <div class="stat-value" id="moves">0</div>
-                    <div class="stat-label">Ходы</div>
-                </div>
-                
-                <div class="stat">
-                    <div class="stat-value" id="level">1</div>
-                    <div class="stat-label">Уровень</div>
-                </div>
+                <div class="stat"><div class="stat-value" id="time">00:00</div><div class="stat-label">Время</div></div>
+                <div class="stat"><div class="stat-value" id="moves">0</div><div class="stat-label">Ходы</div></div>
+                <div class="stat"><div class="stat-value" id="level">1</div><div class="stat-label">Уровень</div></div>
             </div>
-
             <div class="status status-inactive" id="status">
                 <i class="fas fa-exclamation-circle"></i> Камера не активна. Нажмите "Начать игру"
             </div>
         </div>
-        
-        <div class="keyboard-controls">
+
+        <div class="keyboard-controls glass">
             <h3><i class="fas fa-keyboard"></i> Или используйте стрелки</h3>
-            <p>Стрелки ↑↓←→ для движения, клавиши 1-4 для изменения чувств17:59ительности</p>
+            <p>Стрелки ↑↓←→ для движения, клавиши 1–4 для чувствительности</p>
         </div>
-        
-        <div class="tips">
+
+        <div class="tips glass">
             <h3><i class="fas fa-lightbulb"></i> Советы</h3>
             <ul>
-                <li>Держите руку на расстоянии 0.5-1 метра от камеры</li>
-                <li>Делайте жесты четко и держите 1-2 секунды</li>
-                <li>Если жесты не срабатывают - попробуйте изменить чувствительность (клавиши 1-4)</li>
+                <li>Держите руку на расстоянии 0.5–1 метра от камеры</li>
+                <li>Делайте жесты чётко и держите 1–2 секунды</li>
+                <li>В соревновании покажи ✌ чтобы обезвредить ближайшую мину (3 заряда)</li>
             </ul>
         </div>
-        
-        <footer>
-            <p>GrandWarmUp &copy; 2025-2026 | Дистанционное управление курсором, жестами</p>
-            <p>-----------------------------------------------------------------------------</p>
-        </footer>
-        <script src="./index.js"></script>
+
+        <footer><p>GrandWarmUp &copy; 2025–2026 · Дистанционное управление жестами</p></footer>
+
     </div>
     </div>
+
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-card">
+            <div class="auth-logo"><i class="fas fa-hand-sparkles"></i></div>
+            <h1 class="auth-title" id="authTitle">Вход</h1>
+            <p class="auth-subtitle" id="authSubtitle">Войдите в свой аккаунт GrandWarmUp</p>
+            <form class="auth-form" id="authForm" autocomplete="off">
+                <div class="auth-field" id="authNameField" style="display:none;">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="authName" placeholder="Ваше имя" autocomplete="name">
+                </div>
+                <div class="auth-field">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="authEmail" placeholder="Email" autocomplete="email" required>
+                </div>
+                <div class="auth-field">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="authPassword" placeholder="Пароль" autocomplete="current-password" required>
+                    <button type="button" class="auth-eye" id="authTogglePass" title="Показать пароль">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                <div class="auth-error" id="authError"></div>
+                <button type="submit" class="auth-submit" id="authSubmit">Войти</button>
+            </form>
+            <div class="auth-switch">
+                <span id="authSwitchText">Нет аккаунта?</span>
+                <button type="button" id="authSwitchBtn">Зарегистрироваться</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="auth-userbar" id="authUserbar">
+        <div class="avatar" id="authUserInitial">?</div>
+        <span class="name" id="authUserName">Игрок</span>
+        <button class="logout" id="authLogout" title="Выйти">
+            <i class="fas fa-sign-out-alt"></i>
+        </button>
+    </div>
+
+    <div class="account-modal" id="accountModal">
+        <div class="account-modal-content">
+            <button class="account-modal-close" id="accountModalClose" title="Закрыть">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="account-hero">
+                <div class="account-avatar" id="accountAvatar">?</div>
+                <div class="account-name" id="accountName">Игрок</div>
+                <div class="account-tag">Аккаунт GrandWarmUp</div>
+            </div>
+            <div class="account-info">
+                <div class="account-info-row">
+                    <span class="account-info-label"><i class="fas fa-envelope"></i> Email</span>
+                    <span class="account-info-value" id="accountEmail">—</span>
+                </div>
+                <div class="account-info-row">
+                    <span class="account-info-label"><i class="fas fa-fingerprint"></i> ID аккаунта</span>
+                    <span class="account-info-value account-info-mono" id="accountId">—</span>
+                </div>
+                <div class="account-info-row">
+                    <span class="account-info-label"><i class="fas fa-trophy"></i> Достижений</span>
+                    <span class="account-info-value" id="accountStats">0</span>
+                </div>
+            </div>
+            <div class="account-actions">
+                <button class="account-logout-btn" id="accountLogoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Выйти из аккаунта
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mode-picker-modal" id="mode-picker-modal">
+        <div class="mode-picker-content">
+            <button class="mode-picker-close" id="mode-picker-close" title="Закрыть"><i class="fas fa-times"></i></button>
+            <div class="mode-picker-header">
+                <h2>Выбери режим игры</h2>
+                <p class="mode-picker-subtitle">Два способа проверить себя</p>
+            </div>
+            <div class="mode-picker-grid">
+                <button class="mode-card mode-card-warmup" data-mode="warmup">
+                    <div class="mode-card-glow"></div>
+                    <div class="mode-card-icon"><i class="fas fa-spa"></i></div>
+                    <div class="mode-card-body">
+                        <h3>Разминка</h3>
+                        <p>Свободная игра без ограничений. Идеально для разогрева и практики.</p>
+                        <ul>
+                            <li><i class="fas fa-infinity"></i> Без таймера</li>
+                            <li><i class="fas fa-th"></i> Свой размер лабиринта</li>
+                            <li><i class="fas fa-leaf"></i> Без мин</li>
+                        </ul>
+                    </div>
+                    <div class="mode-card-arrow"><i class="fas fa-arrow-right"></i></div>
+                </button>
+                <button class="mode-card mode-card-competition" data-mode="competition">
+                    <div class="mode-card-glow"></div>
+                    <div class="mode-card-icon"><i class="fas fa-trophy"></i></div>
+                    <div class="mode-card-body">
+                        <h3>Соревнование</h3>
+                        <p>На время, с минами и растущей сложностью. Проверь себя на прочность.</p>
+                        <ul>
+                            <li><i class="fas fa-hourglass-half"></i> Обратный таймер</li>
+                            <li><i class="fas fa-bomb"></i> Мины и обезвреживание</li>
+                            <li><i class="fas fa-signal"></i> 6 уровней сложности</li>
+                        </ul>
+                    </div>
+                    <div class="mode-card-arrow"><i class="fas fa-arrow-right"></i></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./index.js"></script>
 </body>
 </html>
