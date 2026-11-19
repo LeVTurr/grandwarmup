@@ -262,7 +262,7 @@ function setAuthMode(mode) {
     if (!authUI.title) return;
     const isLogin = mode === 'login';
     authUI.title.textContent = isLogin ? 'Вход' : 'Регистрация';
-    if (authUI.subtitle) authUI.subtitle.textContent = isLogin ? 'Войдите в свой аккаунт GrandWarmUp' : 'Создайте аккаунт для игры';
+    if (authUI.subtitle) authUI.subtitle.textContent = isLogin ? 'Войдите в свой аккаунт Траектория' : 'Создайте аккаунт для игры';
     if (authUI.submit) authUI.submit.textContent = isLogin ? 'Войти' : 'Зарегистрироваться';
     if (authUI.switchText) authUI.switchText.textContent = isLogin ? 'Нет аккаунта?' : 'Уже есть аккаунт?';
     if (authUI.switchBtn) authUI.switchBtn.textContent = isLogin ? 'Зарегистрироваться' : 'Войти';
@@ -1800,7 +1800,7 @@ let gwTour = null;
 function openTutorialPanel() {
     if (!gwTour) {
         gwTour = new Tour([
-            { centered: true, emoji: '👋', title: 'Добро пожаловать!', text: 'GrandWarmUp — игра с управлением жестами. 30 секунд, и ты знаешь всё.', nextLabel: 'Начать' },
+            { centered: true, emoji: '👋', title: 'Добро пожаловать!', text: 'Траектория — игра с управлением жестами. 30 секунд, и ты знаешь всё.', nextLabel: 'Начать' },
             { selector: '#start-btn', title: 'Начать игру', text: 'Нажми — откроется выбор режима: <b>Разминка</b> или <b>Соревнование</b>.', position: 'bottom', interactive: true, waitFor: () => { const m = document.getElementById('mode-picker-modal'); return m && m.classList.contains('active'); }, waitText: 'Жду нажатия…' },
             { selector: '.mode-card-warmup', title: 'Выбери Разминку', text: 'Для обучения возьмём <b>Разминку</b> — свободную игру без таймера и мин.', position: 'bottom', interactive: true, waitFor: () => gameStarted && gameActive, waitText: 'Жду выбора…' },
             { selector: '.maze-container', title: 'Лабиринт', text: 'Управляй шариком и дойди до красной цели. В соревновании остерегайся 💣!', position: 'top' },
@@ -1828,12 +1828,12 @@ function openAboutPanel() {
                 <button class="about-close" title="Закрыть"><i class="fas fa-times"></i></button>
                 <div class="about-hero">
                     <div class="about-icon"><i class="fas fa-hand-sparkles"></i></div>
-                    <h1>GrandWarmUp</h1>
+                    <h1>Траектория</h1>
                     <div class="about-subtitle">Игра-лабиринт с управлением жестами</div>
                 </div>
                 <div class="about-section">
                     <h3><i class="fas fa-info-circle"></i> Что это</h3>
-                    <p>GrandWarmUp — интерактивная игра, в которой лабиринт управляется движениями рук перед камерой. Никаких клавиатур и мышек: только жесты, распознаваемые нейросетью MediaPipe Hands прямо в браузере.</p>
+                    <p>Траектория — интерактивная игра, в которой лабиринт управляется движениями рук перед камерой. Никаких клавиатур и мышек: только жесты, распознаваемые нейросетью MediaPipe Hands прямо в браузере.</p>
                 </div>
                 <div class="about-section">
                     <h3><i class="fas fa-gamepad"></i> Два режима</h3>
@@ -1870,7 +1870,7 @@ function openAboutPanel() {
                         <li><b>Два пальца (V)</b> → обезвредить ближайшую мину (соревнование)</li>
                     </ul>
                 </div>
-                <div class="about-footer">GrandWarmUp 3.5.0 — 15.10.2026</div>
+                <div class="about-footer">Траектория 3.5.0 — 15.10.2026</div>
             </div>
         `;
         document.body.appendChild(modal);
